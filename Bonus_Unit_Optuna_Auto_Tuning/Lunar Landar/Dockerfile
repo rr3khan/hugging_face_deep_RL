@@ -1,17 +1,13 @@
-FROM python:3.11
+FROM python:3.11-slim
 
 WORKDIR /app
 
-RUN apt install swig cmake
-
-RUN pip install -r https://raw.githubusercontent.com/huggingface/deep-rl-class/main/notebooks/unit1/requirements-unit1.txt && \
-    sudo apt-get update && \
-    apt install python-opengl && \
-    apt install ffmpeg && \
-    apt install xvfb && \
-    pip3 install pyvirtualdisplay && \
-    !pip install stable-baselines3 && \
-    pip install sb3-contrib 
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y swig cmake python3-opengl ffmpeg xvfb g++ && \
+    rm -rf /var/lib/apt/lists/* && \
+    pip install --no-cache-dir setuptools==65.5.0 && \
+    pip install --no-cache-dir -r https://raw.githubusercontent.com/huggingface/deep-rl-class/main/notebooks/unit1/requirements-unit1.txt && \
+    pip install --no-cache-dir pyvirtualdisplay stable-baselines3 sb3-contrib jupyter optuna
 
 # Make port 8888 available to the world outside this container
 EXPOSE 8888
@@ -20,4 +16,4 @@ EXPOSE 8888
 COPY . .
 
 # Run Jupyter Notebook when the container launches
-CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]    
+CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
